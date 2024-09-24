@@ -37,9 +37,9 @@ jobs:
 
   build:
     name: Build Docker images
-    needs: release
-    outputs:
-      image_version: ${{ steps.meta.outputs.version }}
+    needs: 
+      - release
+
     runs-on: ubuntu-latest
     strategy:
       matrix:
