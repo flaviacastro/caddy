@@ -161,18 +161,8 @@ jobs:
       - name: Generate artifact attestation for linux/amd64
         uses: actions/attest-build-provenance@v1.4.3
         with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build.outputs.digest }}
+          subject-digest: ${{ steps.build.outputs.dhcr_digest }}
           push-to-registry: true
-          platform: linux/amd64
-
-      - name: Generate artifact attestation for linux/arm64
-        uses: actions/attest-build-provenance@v1.4.3
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-          subject-digest: ${{ steps.build.outputs.digest }}
-          push-to-registry: true
-          platform: linux/arm64
 
   trivy-fs:
     name: Scan filesystem
