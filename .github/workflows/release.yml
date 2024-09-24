@@ -94,6 +94,23 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           outputs: type=registry,name=${{ env.REGISTRY_IMAGE }},push-by-digest=true,name-canonical=true
 
+      - name: Build and push to GitHub Registry
+        uses: docker/build-push-action@v6.7.0
+        id: build-to-github-registry
+        with:
+          platforms: ${{ matrix.platform }}
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ matrix.platform }}:latest
+            ${{ env.REGISTRY }}/${{ github.repository }}:${{ matrix.platform }}:${{ steps.meta.outputs.version }}
+
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1.4.3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
+          subject-digest: ${{ steps.build-to-github-registry.outputs.digest }}
+          push-to-registry: true
+
       - name: Export digest
         run: |
           mkdir -p /tmp/digests
@@ -107,13 +124,6 @@ jobs:
           path: /tmp/digests/*
           if-no-files-found: error
           retention-days: 1
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1.4.3
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
-          subject-digest: ${{ steps.build-images.outputs.digest }}
-          push-to-registry: true
 
   merge:
     name: Create manifest list and push
