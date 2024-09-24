@@ -106,6 +106,13 @@ jobs:
           if-no-files-found: error
           retention-days: 1
 
+      - name: Generate artifact attestation
+        uses: actions/attest-build-provenance@v1.4.3
+        with:
+          subject-name: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
+          subject-digest: ${{ steps.build-images.outputs.digest }}
+          push-to-registry: true
+
   merge:
     name: Create manifest list and push
     runs-on: ubuntu-latest
@@ -157,13 +164,6 @@ jobs:
       - name: Inspect image
         run: |
           docker buildx imagetools inspect ${{ env.REGISTRY_IMAGE }}:${{ steps.meta.outputs.version }}
-
-      - name: Generate artifact attestation
-        uses: actions/attest-build-provenance@v1.4.3
-        with:
-          subject-name: ${{ env.REGISTRY }}/${{ env.REGISTRY_IMAGE }}
-          subject-digest: ${{ steps.meta.outputs.digest }}
-          push-to-registry: true
 
   trivy-fs:
     name: Scan filesystem
