@@ -9,7 +9,7 @@ on:
 env:
   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
   REGISTRY: ghcr.io
-  REGISTRY_IMAGE: dutlabs/caddy
+  REGISTRY_IMAGE: flaviacastro/caddy
 
 jobs:
   release:
